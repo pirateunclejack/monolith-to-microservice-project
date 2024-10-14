@@ -7,16 +7,21 @@ type productReadModel interface {
 }
 
 type ProductsService struct {
-    repo products.Repository
-    readModel productReadModel
+    repo        products.Repository
+    readModel   productReadModel
 }
 
-func NewProductsService() ProductsService {
-
+func NewProductsService(
+    repo products.Repository, readModel productReadModel,
+) ProductsService {
+    return ProductsService {
+        repo:        repo, 
+        readModel:   readModel, 
+    }
 }
 
-func (s ProductsService) AllProducts() () {
-    
+func (s ProductsService) AllProducts() ([]products.Product, error) {
+    return s.readModel.AllProducts()
 }
 
 type AddProductCommand struct {
