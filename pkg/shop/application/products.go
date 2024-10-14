@@ -1,5 +1,7 @@
 package application
 
+import "errors"
+
 type productReadModel interface {
     AllProducts() ([]products.Product, error)
 }
@@ -26,9 +28,19 @@ type AddProductCommand struct {
 }
 
 func (s ProductsService) AddProduct(cmd AddProductCommand) error {
-    ptoducts.NewPrice(cmd.PriceCents, cmd.PriceCurrency)
+    price, err := products.NewPrice(cmd.PriceCents, cmd.PriceCurrency)
+    if err != nil {
+        return errors.Wrap(err, "invalid product price")
+    }
 
-    products.NewProduct(products.ID(cmd.ID), cmd.Name, cmd.Description, price)
+    p, err := products.NewProduct(products.ID(cmd.ID), cmd.Name, cmd.Description, price)
+    if err != nil {
+        return errors.Wrap(err, "cannot create product")
+    }
 
-    s.repo.Save()
+    if err := s.repo.Save(p); err != nil {
+        return errors.Wrap(err, "cannot save product")
+    }
+
+    return nil
 }
