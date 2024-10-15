@@ -10,9 +10,9 @@ func WaitForService(host string) {
     log.Printf("Waiting for service to start on %s", host)
 
     for {
-        log.Printf("testing connnection to %s", host)
+        log.Printf("testing connection to %s", host)
         conn, err := net.Dial("tcp", host)
-        if err != nil {
+        if err == nil {
             _ = conn.Close()
             log.Printf("%s is up!", host)
             return

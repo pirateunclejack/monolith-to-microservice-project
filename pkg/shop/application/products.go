@@ -1,51 +1,50 @@
 package application
 
-import "errors"
+import (
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/price"
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/shop/domain/products"
+	"github.com/pkg/errors"
+)
 
 type productReadModel interface {
-    AllProducts() ([]products.Product, error)
+	AllProducts() ([]products.Product, error)
 }
 
 type ProductsService struct {
-    repo        products.Repository
-    readModel   productReadModel
+	repo      products.Repository
+	readModel productReadModel
 }
 
-func NewProductsService(
-    repo products.Repository, readModel productReadModel,
-) ProductsService {
-    return ProductsService {
-        repo:        repo, 
-        readModel:   readModel, 
-    }
+func NewProductsService(repo products.Repository, readModel productReadModel) ProductsService {
+	return ProductsService{repo, readModel}
 }
 
 func (s ProductsService) AllProducts() ([]products.Product, error) {
-    return s.readModel.AllProducts()
+	return s.readModel.AllProducts()
 }
 
 type AddProductCommand struct {
-    ID              string
-    Name            string
-    Description     string
-    PriceCents      uint
-    PriceCurrency   string
+	ID            string
+	Name          string
+	Description   string
+	PriceCents    uint
+	PriceCurrency string
 }
 
 func (s ProductsService) AddProduct(cmd AddProductCommand) error {
-    price, err := products.NewPrice(cmd.PriceCents, cmd.PriceCurrency)
-    if err != nil {
-        return errors.Wrap(err, "invalid product price")
-    }
+	price, err := price.NewPrice(cmd.PriceCents, cmd.PriceCurrency)
+	if err != nil {
+		return errors.Wrap(err, "invalid product price")
+	}
 
-    p, err := products.NewProduct(products.ID(cmd.ID), cmd.Name, cmd.Description, price)
-    if err != nil {
-        return errors.Wrap(err, "cannot create product")
-    }
+	p, err := products.NewProduct(products.ID(cmd.ID), cmd.Name, cmd.Description, price)
+	if err != nil {
+		return errors.Wrap(err, "cannot create product")
+	}
 
-    if err := s.repo.Save(p); err != nil {
-        return errors.Wrap(err, "cannot save product")
-    }
+	if err := s.repo.Save(p); err != nil {
+		return errors.Wrap(err, "cannot save product")
+	}
 
-    return nil
+	return nil
 }

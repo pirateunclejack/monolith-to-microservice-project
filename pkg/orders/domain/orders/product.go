@@ -1,6 +1,10 @@
 package orders
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/price"
+)
 
 type ProductID string
 
@@ -12,26 +16,26 @@ type Product struct {
     price price.Price
 }
 
-func NewProduct(id ProductID, name string, price price.Price) (*Product, error){
+func NewProduct(id ProductID, name string, price price.Price) (Product, error){
     if len(id) == 0 {
-        return &Product{}, ErrEmptyProductID
+        return Product{}, ErrEmptyProductID
     }
 
-    return &Product {
+    return Product {
         id: id,
         name: name,
         price: price,
     }, nil
 }
 
-func (p *Product) ID() ProductID {
+func (p Product) ID() ProductID {
     return p.id
 }
 
-func (p *Product) Name() string {
+func (p Product) Name() string {
     return p.name
 }
 
-func (p *Product) Price() price.Price {
+func (p Product) Price() price.Price {
     return p.price
 }

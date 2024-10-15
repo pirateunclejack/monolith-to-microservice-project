@@ -2,7 +2,6 @@ package price
 
 import "errors"
 
-
 var (
     ErrPriceTooLow     = errors.New("price must greater than 0")
     ErrInvalidCurrency = errors.New("invalid currency")
@@ -17,7 +16,6 @@ func NewPrice(cents uint, currency string) (Price, error) {
     if cents <= 0 {
         return Price{}, ErrPriceTooLow
     }
-
     if len(currency)!= 3 {
         return Price{}, ErrInvalidCurrency
     }

@@ -1,5 +1,9 @@
 package products
 
+import (
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/shop/domain/products"
+)
+
 type MemoryRepository struct {
     products []products.Product
 }

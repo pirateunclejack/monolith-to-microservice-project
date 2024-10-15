@@ -1,9 +1,12 @@
 package products
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/price"
+)
 
 type ID string
-type Name string
 
 var (
     ErrEmptyID   = errors.New("empty product id")
@@ -23,13 +26,12 @@ func NewProduct(
     if len(id) == 0 {
         return nil, ErrEmptyID
     }
-
     if len(name) == 0 {
         return nil, ErrEmptyName
     }
 
     return &Product{
-        id:          id,
+        id:           id,
         name:         name,
         description:  description,
         price:        price,

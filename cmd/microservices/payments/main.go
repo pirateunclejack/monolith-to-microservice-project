@@ -4,9 +4,26 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/cmd"
+	payments_app "github.com/pirateunclejack/monolith-to-microservice-project/pkg/payments/application"
+	payments_infra_orders "github.com/pirateunclejack/monolith-to-microservice-project/pkg/payments/infrastructure/orders"
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/payments/interfaces/amqp"
 )
 
-func createPaymentsMicroservice() amqp.paymentsInterface {
+func main() {
+    log.Println("Starting payments microservice")
+	defer log.Println("Closing payments microservice")
+
+    ctx := cmd.Context()
+
+    paymentsInterface := createPaymentsMicroservice()
+    if err := paymentsInterface.Run(ctx); err!= nil {
+        panic(err)
+    }
+}
+
+func createPaymentsMicroservice() amqp.PaymentsInterface {
     cmd.WaitForService(os.Getenv("SHOP_RABBITMQ_ADDR"))
 
     paymentsService := payments_app.NewPaymentsService(
@@ -18,22 +35,9 @@ func createPaymentsMicroservice() amqp.paymentsInterface {
         os.Getenv("SHOP_RABBITMQ_ORDERS_TO_PAY_QUEUE"),
         paymentsService,
     )
-
     if err != nil {
         panic(err)
     }
 
     return paymentsInterface
-}
-
-func main() {
-    log.Println("Starting payments microservice")
-    defer log.Println("Stopping payments microservice")
-
-    ctx := cmd.Context()
-
-    paymentsInterface := createPaymentsMicroservice()
-    if err := paymentsInterface.Run(ctx); err!= nil {
-        panic(err)
-    }
 }

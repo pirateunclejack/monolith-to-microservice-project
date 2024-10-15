@@ -1,6 +1,15 @@
 package http
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+	common_http "github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/http"
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/common/price"
+	"github.com/pirateunclejack/monolith-to-microservice-project/pkg/shop/domain/products"
+)
+
 
 type productsReadModel interface {
     AllProducts() ([]products.Product, error)
@@ -11,7 +20,7 @@ type productsResource struct {
 }
 
 type productView struct {
-    ID          uint      `json:"id"`
+    ID          string    `json:"id"`
     Name        string    `json:"name"`
     Description string    `json:"description"`
     Price       priceView `json:"price"`
@@ -46,7 +55,7 @@ func (p productsResource) GetAll(w http.ResponseWriter, r *http.Request){
         })
     }
 
-    render.Response(w, r, view)
+    render.Respond(w, r, view)
 }
 
 func AddRoutes(router *chi.Mux, productsReadModel productsReadModel) {
